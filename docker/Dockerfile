@@ -30,7 +30,7 @@ RUN echo "/opt/intel/lib/intel64\n/opt/intel/mkl/lib/intel64" > /etc/ld.so.conf.
 # yubench
 RUN apt-get update && apt-get install git -y --no-install-recommends
 RUN git config --global http.sslVerify false
-RUN cd ~ && git clone https://git.coding.net/warcraftw/yubench.git
+RUN cd ~ && git clone https://github.com/yucore/yubench.git
 
 
 WORKDIR /root/yubench
