@@ -8,6 +8,6 @@ With initial focus on deep learning and popular "DL" platforms.
 1. Install nvidia-docker
 2. Run following commands to build docker image and run benchmark
 ```
-docker build -t yubench https://github.com/yucore/yubench.git/docker/Dockerfile
+docker build -t yubench https://raw.githubusercontent.com/yucore/yubench/master/docker/Dockerfile
 nvidia-docker run -ti yubench
 ```
