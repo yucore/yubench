@@ -33,5 +33,5 @@ RUN git config --global http.sslVerify false
 RUN cd ~ && git clone https://github.com/yucore/yubench.git
 
 
-WORKDIR /root/yubench
+WORKDIR /root/yubench/code
 CMD sh bench.sh

@@ -120,14 +120,14 @@ int main()
     curandSetPseudoRandomGeneratorSeed(curand_gen, 123ULL);
 
 
-    FILE *fout = fopen("gemm.out", "w");
+    FILE *fout = fopen("gemm.csv", "w");
     if (!fout) {
         printf("can't open output file\n");
         exit(1);
     }
 
     printf("%7s%7s%7s%7s%7s%13s\n", "m", "n", "k", "at", "bt", "time(us)");
-    fprintf(fout, "%7s%7s%7s%7s%7s%13s\n", "m", "n", "k", "at", "bt", "time(us)");
+    fprintf(fout, "%7s,%7s,%7s,%7s,%7s,%13s\n", "m", "n", "k", "at", "bt", "time(us)");
     int m, n, k;
     while (scanf("%d%d%d", &m, &n, &k) != EOF) {
         bool at, bt;
@@ -151,7 +151,7 @@ int main()
         printf("%7d%7d%7d%7c%7c", m, n, k, at ? 't':'n', bt ? 't':'n');
         printf("%13.3lf\n", t);
 
-        fprintf(fout, "%7d%7d%7d%7c%7c", m, n, k, at ? 't':'n', bt ? 't':'n');
+        fprintf(fout, "%7d,%7d,%7d,%7c,%7c,", m, n, k, at ? 't':'n', bt ? 't':'n');
         fprintf(fout, "%13.3lf\n", t);
     }
 

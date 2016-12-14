@@ -64,19 +64,19 @@ double RandAccess(int size, int blocksize, int times) {
 int main() {
     char op[256];
     int size, blocksize, times;
-    FILE *fout = fopen("memory.out", "w");
+    FILE *fout = fopen("memory.csv", "w");
     if (!fout) {
-        printf("can not open memory.out!\n");
+        printf("can not open memory.csv!\n");
         exit(1);
     }
 
     printf("%14s%14s%14s%14s%16s\n", "access", "size", "blocksize", "repeat", "time cost (s)");
-    fprintf(fout, "%14s%14s%14s%14s%16s\n", "access", "size", "blocksize", "repeat", "time cost (s)");
+    fprintf(fout, "%14s,%14s,%14s,%14s,%16s\n", "access", "size", "blocksize", "repeat", "time cost (s)");
     while (scanf("%s%d%d%d", op, &size, &blocksize, &times) != EOF) {
         double t = op[0]=='s' ? SeqAccess(size, blocksize, times) :
                                 RandAccess(size, blocksize, times);
         printf("%14s%14d%14d%14d%16.10lf\n", op[0]=='s' ? "seq":"rand", size, blocksize, times, t);
-        fprintf(fout, "%14s%14d%14d%14d%16.10lf\n", op[0]=='s' ? "seq":"rand", size, blocksize, times, t);
+        fprintf(fout, "%14s,%14d,%14d,%14d,%16.10lf\n", op[0]=='s' ? "seq":"rand", size, blocksize, times, t);
     }
 
     return 0;
