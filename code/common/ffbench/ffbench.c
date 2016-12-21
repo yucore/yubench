@@ -106,13 +106,13 @@
 			  OS/2, data caching disabled.	(Kern
 			  Sibbald).
 
-	      34.9	  Silicon Graphics Indigo², MIPS R4400,
+	      34.9	  Silicon Graphics Indigo?, MIPS R4400,
                           175 Mhz, IRIX 5.2, "-O".
 
 	      32.4	  Pentium 133, Windows NT, Microsoft Visual
 			  C++ 4.0.
 
-	      17.25	  Silicon Graphics Indigo², MIPS R4400,
+	      17.25	  Silicon Graphics Indigo?, MIPS R4400,
                           175 Mhz, IRIX 6.5, "-O3".
 
 	      14.10	  Dell Dimension XPS R100, Pentium II 400 MHz,
@@ -131,6 +131,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <sys/time.h> // add by wxy
+#include <time.h>
 
 /*  The  program  may  be  run	with  Float defined as either float or
     double.  With IEEE arithmetic, the same answers are generated  for
@@ -234,18 +236,23 @@ static void fourn(data, nn, ndim, isign)
 }
 #undef SWAP
 
-int main()
+double bench(int npasses, int faedge)
 {
-	int i, j, k, l, m, npasses = Passes, faedge;
+	int i, j, k, l, m;
 	Float *fdata;
 	static int nsize[] = {0, 0, 0};
 	long fanum, fasize;
 	double mapbase, mapscale, rmin, rmax, imin, imax;
 
-	faedge = Asize; 	   /* FFT array edge size */
+	//faedge = Asize; 	   /* FFT array edge size */
+
 	fanum = faedge * faedge;   /* Elements in FFT array */
 	fasize = ((fanum + 1) * 2 * sizeof(Float)); /* FFT array size */
 	nsize[1] = nsize[2] = faedge;
+
+
+    struct timeval t0, t1;
+    gettimeofday(&t0, NULL);
 
 	fdata = (Float *) malloc(fasize);
 	if (fdata == NULL) {
@@ -367,5 +374,28 @@ int main()
 	}
 #endif
 
-	return 0;
+    gettimeofday(&t1, NULL);
+    double t = t1.tv_sec-t0.tv_sec + 1e-6*(t1.tv_usec-t0.tv_usec);
+
+	return t;
 }
+
+int main() {
+    int npasses, faedge;
+    FILE *fp = fopen("ffbench.csv", "w");
+
+    printf("npasses, faedge, time(s)\n"); 
+    fprintf(fp, "npasses, faedge, time(s)\n"); 
+
+    while (scanf("%d%d", &npasses, &faedge) != EOF) {
+        double t = bench(npasses, faedge);
+        printf("%d, %d, %lf\n", npasses, faedge, t); 
+        fprintf(fp, "%d, %d, %lf\n", npasses, faedge, t); 
+        fflush(fp);
+    }
+    fclose(fp);
+
+    return 0;
+}
+
+

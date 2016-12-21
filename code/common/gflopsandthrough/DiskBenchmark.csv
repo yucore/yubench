@@ -1,0 +1,4 @@
+blocksize, threads, SEQ READ/WRITE Thoughtput(MB/s),                                  SEQ READ/WRITE time(s),                                  RAND READ/WRITE Thoughtput(MB/s),                                   RAND READ/WRITE time(s),                                   
+Byte,137.969095,7.248000,10.724091,93.248000
+KiloByte,1924.455681,0.519627,1601.105076,0.624569
+MegaByte,2025.158702,0.493788,10195.078914,0.098087

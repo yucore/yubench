@@ -68,7 +68,7 @@ void *threadFunctionIops(void *arg)
 }
 
 //Calulates the GIOPS
-void *iopsCal(int numberOfThreads)
+void *iopsCal(int numberOfThreads, double *t, double *ops)
 {
 	volatile int i;
 	int a;
@@ -89,6 +89,10 @@ void *iopsCal(int numberOfThreads)
 	double Iops=(double)( numberOfThreads * count *(ITERATION/cpu_time_used));//calculating iops
     	double gIops=(double)Iops/1000000000;//converting iops to GIOPS
 	printf("GIOPS : %f\n",gIops);
+
+    *t = cpu_time_used;
+    *ops = gIops;
+
 	return NULL;
 }
 
@@ -126,7 +130,7 @@ void flops(int numberOfThreads)
 }
 
 //calculates the GFLOPS 
-void flopsCal(int numberOfThreads)
+void flopsCal(int numberOfThreads, double *t, double *ops)
 {	
 	clock_t start, end;
 	double cpu_time_used;
@@ -147,6 +151,9 @@ void flopsCal(int numberOfThreads)
     	double Flops=(double)( numberOfThreads * count *(ITERATION/cpu_time_used));//calculating flops
     	double gFlops=(double)Flops/1000000000;//Converting flops to gflops
     	printf("GFLOPS : %lf\n",gFlops);
+
+    *t = cpu_time_used;
+    *ops = gFlops;
 }
 
 //Calculates 600 GIOPS per second and stores in CPU_IOPS.txt
@@ -186,33 +193,37 @@ void iops(int numberOfThreads)
 
 int main()
 {       //menu driven program
-	while(1){	
-	int numberOfThreads;
+    FILE *fp = fopen("CPUBenchmark.csv", "w");
+    fprintf(fp, "number of threads, flops time, gflops, iops time, giops\n");
 
-		printf("\nEnter the no of threads:(1/2/4) /(Enter 8 for 600 Samples /Exit-0: ");
-		scanf("%d",&numberOfThreads);	
-		// Enter 1/2/3 threads for GFLOPS/GIOPS 
-		// Incase to get 600 samples for GFLOPS/GIOPS Enter 8 
-		// To exit press 0
-		if(numberOfThreads!=1 && numberOfThreads!=2 && numberOfThreads!=4 && numberOfThreads!=0 && numberOfThreads!=8)
-		{
-			printf("\nInvalid choice..Please enter again");
-			
-		}
-		else if(numberOfThreads==8)
-		{
-			flops(4);
-    			iops(4);
-		}
-		else if(numberOfThreads==0)
-		{
-			exit(0);
-		}
-		else 
-		{
-			flopsCal(numberOfThreads);
-    			iopsCal(numberOfThreads);
-		}	
-    	}
-    	return 0;
+    int numberOfThreads;
+    while (scanf("%d",&numberOfThreads) != EOF) {
+        // Enter 1/2/3 threads for GFLOPS/GIOPS 
+        // Incase to get 600 samples for GFLOPS/GIOPS Enter 8 
+        // To exit press 0
+        if(numberOfThreads!=1 && numberOfThreads!=2 && numberOfThreads!=4 && numberOfThreads!=0 && numberOfThreads!=8)
+        {
+            printf("\nInvalid choice..Please enter again");
+
+        }
+        else if(numberOfThreads==8)
+        {
+            flops(4);
+            iops(4);
+        }
+        else if(numberOfThreads==0)
+        {
+            exit(0);
+        }
+        else 
+        {
+            double t1, ops1, t2, ops2;
+            flopsCal(numberOfThreads, &t1, &ops1);
+            iopsCal(numberOfThreads, &t2, &ops2);
+            fprintf(fp, "%d %lf %lf %lf %lf\n", numberOfThreads, t1, ops1, t2, ops2);
+            fflush(fp);
+        }	
+    }
+    fclose(fp);
+    return 0;
 }

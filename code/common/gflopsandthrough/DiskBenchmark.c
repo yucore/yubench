@@ -203,6 +203,19 @@ int main(){
 		bufferData[k]='S';
 	}
 	pthread_t th[4];
+
+    FILE *fp = fopen("DiskBenchmark.csv", "w");
+    fprintf(fp, "blocksize, threads, SEQ WRITE Thoughtput(MB/s), \
+                                 SEQ WRITE time(s), \
+                                 SEQ READ Thoughtput(MB/s), \
+                                 SEQ READ time(), \
+                                 RAND WRITE Thoughtput(MB/s),  \
+                                 RAND WRITE time(s),  \
+                                 RAND READ Thoughtput(MB/s), \
+                                 RAND READ time(), \
+                                 \n");
+
+    while (1) {
 		//Select the Block Size to carry out  
 		printf("..Disk Benchmarking...\n");
 		printf("..Block Size...\n");
@@ -211,7 +224,11 @@ int main(){
 		printf("3.Mega Byte\n");
 		printf("4.EXIT\n");
 		printf("\nEnter your choice :");
-		scanf("%d",&ch);
+
+
+		if (scanf("%d",&ch) == EOF) break;
+
+        fprintf(fp, "%s", ch==1 ? "Byte" : ch==2 ? "KiloByte" : "MegaByte");
 		
 		switch(ch){
 			case 1: printf("\n\nBlock size selected is Byte");
@@ -231,13 +248,14 @@ int main(){
 					printf("\nThroughtput:%f MB/s",throughput);					
 					l= (time)*1000/total_mb;// Calculating latency
 					printf("\nLatency : %f ms",l);
-			
-    					start=clock();
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
+
+                    start=clock();
 					for(i=0;i<nthread;i++)
-						{
-							pthread_create(&th[i],NULL,readToFile,NULL);//creates threads
-							pthread_join(th[i], NULL);// joins threads
-						}
+                    {
+                        pthread_create(&th[i],NULL,readToFile,NULL);//creates threads
+                        pthread_join(th[i], NULL);// joins threads
+                    }
 					end=clock();
 					time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
 					total_mb=(nthread * BYTE * MAX_BYTE)/1000000;
@@ -246,13 +264,14 @@ int main(){
 					printf("\nThroughtput:%f MB/s",throughput);
 					l1= (time)*1000/total_mb;// Calculating latency
 					printf("\nLatency : %f ms",l1);
+                    fprintf(fp, ",%lf,%lf", throughput, l1); // add by wxy
 					
 					start=clock();
 					for(i=0;i<nthread;i++)
-						{
-							pthread_create(&th[i],NULL,writeRandomsToFile,NULL);//creates threads
-							pthread_join(th[i], NULL);// joins threads
-						}
+                    {
+                        pthread_create(&th[i],NULL,writeRandomsToFile,NULL);//creates threads
+                        pthread_join(th[i], NULL);// joins threads
+                    }
 					end=clock();
 					time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
 					total_mb=(nthread * BYTE * MAX_BYTE)/1000000;
@@ -261,13 +280,14 @@ int main(){
 					printf("\nThroughtput:%f MB/s",throughput);
 					l= (time)*1000/total_mb;// Calculating latency
 					printf("\nLatency : %f ms",l);
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
 					
 					start=clock();
 					for(i=0;i<nthread;i++)
-						{
-							pthread_create(&th[i],NULL,readRandomsToFile,NULL);//creates threads
-							pthread_join(th[i], NULL);// joins threads
-						}
+                    {
+                        pthread_create(&th[i],NULL,readRandomsToFile,NULL);//creates threads
+                        pthread_join(th[i], NULL);// joins threads
+                    }
 					end=clock();
 					time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
 					total_mb=(nthread * BYTE * MAX_BYTE)/1000000;
@@ -276,8 +296,9 @@ int main(){
 					printf("\nThroughtput:%f MB/s",throughput);
 					l1= (time)*1000/total_mb;// Calculating latency
 					printf("\nLatency : %f ms",l1);
+                    fprintf(fp, ",%lf,%lf", throughput, l1); // add by wxy
 					
-						break;	
+                    break;	
 			
 		case 2: printf("\n\nBlock size selected is KILOBYTE");
 
@@ -298,6 +319,7 @@ int main(){
 					printf("\nThroughtput:%f MB/s",throughput);
 					l= (time)*1000/total_mb;// Calculating latency
 					printf("\nLatency : %f ms",l);
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
 			
     					start=clock();
 					for(i=0;i<nthread;i++)
@@ -313,37 +335,42 @@ int main(){
 					printf("\nThroughtput:%f MB/s",throughput);
 					l1= (time)*1000/total_mb;// Calculating latency
 					printf("\nLatency : %f ms",l1);
-					start=clock();
-					for(i=0;i<nthread;i++)
-						{
-							pthread_create(&th[i],NULL,writeKiloByteRandom,NULL);//creates threads
-							pthread_join(th[i], NULL);// joins threads
-						}
-					end=clock();
-					total_mb=(nthread * KILOBYTE * MAX_KB)/1000000;
-					time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
-					
-					printf("\n\nRANDOM WRITE 1KB");
-					throughput=total_mb/time;// Calulating throughput
-					printf("\nThroughtput:%f MB/s",throughput);
-					l= (time*1000)/total_mb;// Calculating latency
-					printf("\nLatency : %f ms",l);
-					
-					start=clock();
-					for(i=0;i<nthread;i++)
-						{
-							pthread_create(&th[i],NULL,readKiloByteRandom,NULL);//creates threads
-							pthread_join(th[i], NULL);// joins threads
-						}
-					end=clock();
-					total_mb=(nthread * KILOBYTE * MAX_KB)/1000000;
-					time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
-					l1= (time*1000)/total_mb;// Calculating latency
-					printf("\n\nRANDOM READ");
-					throughput=total_mb/time;// Calulating throughput
-					printf("\nThroughtput:%f MB/s",throughput);
-					printf("\nLatency : %f ms",l1);
-						break;	
+                    fprintf(fp, ",%lf,%lf", throughput, l1); // add by wxy
+
+                    start=clock();
+                    for(i=0;i<nthread;i++)
+                    {
+                        pthread_create(&th[i],NULL,writeKiloByteRandom,NULL);//creates threads
+                        pthread_join(th[i], NULL);// joins threads
+                    }
+                    end=clock();
+                    total_mb=(nthread * KILOBYTE * MAX_KB)/1000000;
+                    time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
+
+                    printf("\n\nRANDOM WRITE 1KB");
+                    throughput=total_mb/time;// Calulating throughput
+                    printf("\nThroughtput:%f MB/s",throughput);
+                    l= (time*1000)/total_mb;// Calculating latency
+                    printf("\nLatency : %f ms",l);
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
+
+                    start=clock();
+                    for(i=0;i<nthread;i++)
+                    {
+                        pthread_create(&th[i],NULL,readKiloByteRandom,NULL);//creates threads
+                        pthread_join(th[i], NULL);// joins threads
+                    }
+                    end=clock();
+                    total_mb=(nthread * KILOBYTE * MAX_KB)/1000000;
+                    time=((double) (end-start))/ CLOCKS_PER_SEC;// calculating time taken 
+                    l1= (time*1000)/total_mb;// Calculating latency
+                    printf("\n\nRANDOM READ");
+                    throughput=total_mb/time;// Calulating throughput
+                    printf("\nThroughtput:%f MB/s",throughput);
+                    printf("\nLatency : %f ms",l1);
+                    fprintf(fp, ",%lf,%lf", throughput, l1); // add by wxy
+                    break;	
+
 		case 3: printf("\n\nBlock size selected is MEGABYTE");
 					printf("\n\nEnter the number of threads(1/2) :\n");
 					scanf("%d",&nthread);
@@ -362,6 +389,8 @@ int main(){
 					throughput=total_mb/time;// Calulating throughput
 					printf("\nThroughtput:%f MB/s",throughput);
 					printf("\nLatency : %f ms",l);
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
+
 					start=clock();
 					for(i=0;i<nthread;i++)
 						{
@@ -376,6 +405,8 @@ int main(){
 					throughput=total_mb/time;// Calulating throughput
 					printf("\nThroughtput:%f MB/s",throughput);
 					printf("\nLatency : %f ms",l1);
+                    fprintf(fp, ",%lf,%lf", throughput, l1); // add by wxy
+
 					start=clock();
 					for(i=0;i<nthread;i++)
 						{
@@ -390,6 +421,8 @@ int main(){
 					throughput=total_mb/time;// Calulating throughput
 					printf("\nThroughtput:%f MB/s",throughput);
 					printf("\nLatency : %f ms",l);
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
+
 					start=clock();
 					for(i=0;i<nthread;i++)
 						{
@@ -404,9 +437,15 @@ int main(){
 					throughput=total_mb/time;// Calulating throughput
 					printf("\nThroughtput:%f MB/s",throughput);
 					printf("\nLatency : %f ms",l);
+                    fprintf(fp, ",%lf,%lf", throughput, l); // add by wxy
 				
 						break;	
-		case 4: break;
+                case 4: break;
 		}
+        fprintf(fp, "\n");
+        fflush(fp);
+    }
 	
+    fclose(fp);
+    return 0;
 }

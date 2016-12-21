@@ -113,11 +113,24 @@ int main()
 	pthread_t th[10];// array of threads
 	int i;
 	int ch,nthread;
+
+    FILE *fp = fopen("MemoryBenchmark.csv", "w");
+    fprintf(fp, "blocksize, threads, SEQ READ/WRITE Thoughtput(MB/s), \
+                                 SEQ READ/WRITE time(s), \
+                                 RAND READ/WRITE Thoughtput(MB/s),  \
+                                 RAND READ/WRITE time(s),  \
+                                 \n");
+
+
 	while(1)
 	{// Select the block size to read write sequentially and randomly
 		printf(".. Memory Benchmarking..");
 		printf("\n\nEnter the Block Size:\n1.BYTE\n2.KILOBYTE\n3.MEGABYTE\n4.Exit\n");
-		scanf("%d",&ch);
+
+		// scanf("%d",&ch);
+		if (scanf("%d",&ch) == EOF) break;
+        fprintf(fp, "%s", ch==1 ? "Byte" : ch==2 ? "KiloByte" : "MegaByte");
+	
 		if(ch==4)
 		{
 			exit(0);
@@ -146,6 +159,7 @@ int main()
     			throughput=total_mb/time;// calculating throughput
     			printf("\nThroughtput:%f MB/s",throughput);
 			
+            fprintf(fp, ",%lf,%lf", throughput, latency); // add by wxy
 			// Random Memroy Read+Write
 			
 			printf("\n\n..Random read+write..\n");
@@ -163,6 +177,7 @@ int main()
     			printf("\nLatency : %f ms",latency);
     			throughput=total_mb/time;// calculating throughput
     			printf("\nThroughtput:%f MB/s",throughput);
+            fprintf(fp, ",%lf,%lf", throughput, latency); // add by wxy
 			break;
 			
 			case 2: 
@@ -184,6 +199,7 @@ int main()
     			printf("\nLatency : %f ms",latency);
     			throughput=total_mb/time;// calculating throughput
     			printf("\nThroughtput:%f MB/s",throughput);
+            fprintf(fp, ",%lf,%lf", throughput, latency); // add by wxy
 			
 	
 			//Random Memroy Read+Write for KILOBYTE block
@@ -204,6 +220,7 @@ int main()
     			printf("\nLatency : %f ms",latency);
     			throughput=total_mb/time;// calculating throughput
     			printf("\nThroughtput:%f MB/s",throughput);
+            fprintf(fp, ",%lf,%lf", throughput, latency); // add by wxy
 			break;
 
 			case 3: 
@@ -227,6 +244,7 @@ int main()
     			printf("\nLatency : %f ms",latency);
     			throughput=total_mb/time;// calculating throughput
     			printf("\nThroughtput:%f MB/s",throughput);			
+            fprintf(fp, ",%lf,%lf", throughput, latency); // add by wxy
 			
 			
 			//Random Memory Read+Write
@@ -246,6 +264,7 @@ int main()
     			printf("\nLatency : %f ms",latency);
     			throughput=total_mb/time;// calculating throughput
     			printf("\nThroughtput:%f MB/s",throughput);				
+            fprintf(fp, ",%lf,%lf", throughput, latency); // add by wxy
 			
 			break;
 
@@ -253,7 +272,11 @@ int main()
 			break;
 			default:printf("\nPlease enter a valid option..\n");	
 		}
+        fprintf(fp, "\n");
+        fflush(fp);
 	}
+    fclose(fp);
+    return 0;
 }
 
 
