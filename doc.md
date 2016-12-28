@@ -21,6 +21,8 @@ yubench/code/common/memory/memory.csv
 yubench/code/common/gflopsandthrough/CPUBenchmark.csv
 yubench/code/common/gflopsandthrough/DiskBenchmark.csv
 yubench/code/common/gflopsandthrough/MemoryBenchmark.csv
+yubench/code/nvidia/gemm/gemm.csv
+yubench/code/intel/gemm/gemm.csv
 ```
 
 
